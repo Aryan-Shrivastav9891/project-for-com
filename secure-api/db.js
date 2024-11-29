@@ -24,7 +24,24 @@ const execute = async (query) => {
     return Promise.reject(error);
   }
 };
-
+const ForUpdateexecute = async (query) => {
+  try {
+    await sequelize.authenticate();
+    const [rows] = await sequelize.query(query, { type: QueryTypes.RAW });
+    return Promise.resolve(rows);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+const ForDelexecute = async (query) => {
+  try {
+    await sequelize.authenticate();
+    const [result] = await sequelize.query(query, { type: QueryTypes.RAW });
+    return Promise.resolve(result);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
 const remove = async (query) => {
   try {
     await sequelize.authenticate();
@@ -67,8 +84,10 @@ const insertMany = async (tableName, param) => {
   try {
     await sequelize.authenticate();
     let itemKeys = Object.keys(param[0]);
-    let query = `INSERT INTO ${process.env.DB_NAME}.${tableName} (${itemKeys.join(",")}) VALUES `;
-    
+    let query = `INSERT INTO ${
+      process.env.DB_NAME
+    }.${tableName} (${itemKeys.join(",")}) VALUES `;
+
     for (let obj of param) {
       let itemValues = [];
       itemKeys.forEach((item) => {
@@ -80,13 +99,22 @@ const insertMany = async (tableName, param) => {
       });
       query += `('${itemValues.join("','")}'),`;
     }
-    
+
     query = query.slice(0, -1); // Remove the last comma
-    const rows = await sequelize.query(query, { type: QueryTypes.INSERT });
+    const rows = await sequelize.query(query, { type: QueryTypes.RAW });
     return Promise.resolve(rows);
   } catch (error) {
     return Promise.reject(error);
   }
 };
 
-module.exports = { execute, remove, insert, insertMany, updateOne, Sequelize };
+module.exports = {
+  execute,
+  remove,
+  insert,
+  insertMany,
+  updateOne,
+  Sequelize,
+  ForDelexecute,
+  ForUpdateexecute
+};

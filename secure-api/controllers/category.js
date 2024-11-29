@@ -1,4 +1,4 @@
-const { insert, execute, updateOne } = require("../db");
+const { insert, execute, updateOne, ForDelexecute, ForUpdateexecute } = require("../db");
 const { categModel, servModel } = require("../models/category");
 const tb = require("../constant");
 
@@ -47,7 +47,7 @@ exports.updateCategory = async (req, res) => {
     const { categoryId } = req.params;
     const qr = `UPDATE category SET name = '${req.body.catName}' WHERE id = ${categoryId}`
     console.log("qr : ", qr)
-    const result = await execute(qr)
+    const result = await ForUpdateexecute(qr)
     console.log("result is : ",result)
      if(result){
         return res
@@ -65,7 +65,7 @@ exports.deletCategory = async (req, res) => {
   try {
     const {categoryId} = req.params
     const qr = `DELETE FROM category WHERE id = ${categoryId}`
-    const result = await execute(qr)
+    const result = await ForDelexecute(qr)
     console.log("result delete" , result)
     if(result){
         return res
@@ -83,7 +83,7 @@ exports.deletCategory = async (req, res) => {
 
 exports.createService = async (req, res) => {
   try {
-
+    
     const model = servModel(req.body)
     const result = await insert(tb.constant.category, model)
     if (result) {
@@ -135,6 +135,7 @@ exports.updateServById = async (req, res) => {
 exports.delService = async (req, res) => {
   try {
     const {serviceId , categoryId} = req.params
+    
     const qr = `DELETE FROM servie WHERE id = ${serviceId} and CategoryId = ${categoryId}`
     const result = await execute(qr)
     if(result){
